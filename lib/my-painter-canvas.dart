@@ -12,37 +12,53 @@ import 'dart:math';
 import 'particle.dart';
 
 
-// ignore: non_constant_identifier_names
-Offset PolarToCartesian(double radius, double theta) {
-
-  return Offset(radius * cos(theta), radius * sin(theta));
-
-}
 
 
 class MyPainterCanvas extends CustomPainter {
 
   List<Particle> particles;
   Random rgn;
-  double animationValue;
+  Size canvasSize;
+
+  Offset offset;
+  final double W = 600.0;
 
   // Constructor
-  MyPainterCanvas(this.rgn, this.particles, this.animationValue);
+  MyPainterCanvas(this.rgn, this.particles, this.canvasSize) {
+
+    offset = Offset(canvasSize.width / 2, canvasSize.height / 2 - W / 2);
+
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
 
+
+    /// 1. Draw the Particles
+
     this.particles.forEach((p) {
 
-      // Paint the objects
       var paint = Paint();
-      //paint.strokeWidth = 10;
-      //paint.style = PaintingStyle.stroke;
-      paint.blendMode = BlendMode.modulate; //modulate, xor,
+      paint.strokeWidth = 2.0;
       paint.color = p.color;
-      canvas.drawCircle(p.position, p.radius, paint);
+      paint.style = PaintingStyle.stroke;
+      paint.blendMode = BlendMode.difference;
+      canvas.drawCircle(p.position + offset, p.radius, paint);
 
     });
+
+
+    /// 2. Draw the Frame
+
+    var center = Offset(canvasSize.width / 2, canvasSize.height / 2);
+
+    var border = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 5.0
+      ..style = PaintingStyle.stroke;
+
+    var rect = Rect.fromCenter(center: center, width: W, height: W);
+    canvas.drawRect(rect, border);
 
 
   }

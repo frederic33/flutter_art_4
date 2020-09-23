@@ -15,8 +15,8 @@ class Particle {
   Offset position, origin;
   Color color;
   double radius;
-  double theta = 0;
-  double speed = 0;
+  // double theta = 0;
+  // double speed = 0;
 
   // Define velocity
   // double speed;

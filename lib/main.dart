@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
 
-      title: 'Art 3',
+      title: 'Art 4',
 
       theme: ThemeData(
         primarySwatch: Colors.blue,

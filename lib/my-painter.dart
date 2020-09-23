@@ -27,45 +27,43 @@ class MyPainter extends StatefulWidget {
 
 class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMixin {
 
-  /// Particles container
+  /// A. Particles container
   List<Particle> particles = List<Particle>();
 
-  /// Random generator instance
-  Random rgn = Random(DateTime.now().millisecondsSinceEpoch);
-
-  /// Animation controller
+  /// B. Animation controller
   Animation<double> animation;
   AnimationController controller;
 
+  /// C. Random generator instance
+  Random rgn = Random(DateTime.now().millisecondsSinceEpoch);
 
-
+  // D. Constants
+  final int durationInSeconds = 10;
+  final double durationEndInMS = 300;
 
   @override void initState() {
 
     super.initState();
 
-    /// 🧩 Controller of Animation
-    controller = AnimationController(vsync: this, duration: Duration(seconds: 10));
-
-    /// 🧩 Animation Behaviour
-    animation = Tween<double>(begin: 0, end:300).animate(controller)
+    /// 🧩 Controller of Animation & Animation Behaviour
+    controller = AnimationController(vsync: this, duration: Duration(seconds: durationInSeconds));
+    animation = Tween<double>(begin: 0, end:durationEndInMS).animate(controller)
 
     /// 🧩 Animation Listener
       ..addListener(() {
-        if (this.particles.length == 0) {
-          // create
+
+        if (this.particles.length == 0) {   /// create
+
           createBlobField();
 
-        } else {
-          // update
-          setState(() {
-            updateBlobField();
-          });
+        } else {                            /// update
+
+          // setState(() {
+          //   updateBlobField();
+          // });
 
         }
-        setState(() {
-          // The state that has changed here is the animation object's value
-        });
+
       })
     /// 🧩 Animation Status Listener
       ..addStatusListener((status) {
@@ -96,51 +94,57 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
 
+    size = MediaQuery.of(context).size;
+    debugPrint("debug Size of Screen : $size");
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Art 3 Circles", style: TextStyle(fontSize: 20, color: Colors.black),),
-        backgroundColor: Colors.deepOrangeAccent,
+      body: CustomPaint(
+        painter: MyPainterCanvas(rgn, this.particles, size),
       ),
-      body: SafeArea(
-
-        child: Container(
-
-          color: Colors.white,
-
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              CustomPaint(
-
-                foregroundPainter: MyPainterCanvas(rgn, particles, animation.value),
-                // painter: MyPainterCanvas(rgn, particles, animation.value),
-                // child: Column(
-                //   children: [
-                //     SizedBox(height: 8),
-                //     Text("radius factor : $radiusFactor", style: TextStyle(color: Colors.blueAccent),),
-                //     Slider(
-                //       value: radiusFactor,
-                //       min: 1.0,
-                //       max: 10.0,
-                //       label: radiusFactor.toString(),
-                //       // divisions: 0,
-                //       onChanged: (value) {
-                //         setState(() {
-                //           // radiusFactor = value;
-                //         });
-                //       },
-                //     ),
-                //   ],
-                // ),
-              ),
-
-
-            ],
-          ),
-        ),
-
-      ),
+      // // appBar: AppBar(
+      // //   title: Text("Art 3 Circles", style: TextStyle(fontSize: 20, color: Colors.black),),
+      // //   backgroundColor: Colors.deepOrangeAccent,
+      // // ),
+      // body: SafeArea(
+      //
+      //   child: Container(
+      //
+      //     color: Colors.white,
+      //
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //
+      //         CustomPaint(
+      //
+      //           foregroundPainter: MyPainterCanvas(rgn, particles, MediaQuery.of(context).size),
+      //           // painter: MyPainterCanvas(rgn, particles, animation.value),
+      //           // child: Column(
+      //           //   children: [
+      //           //     SizedBox(height: 8),
+      //           //     Text("radius factor : $radiusFactor", style: TextStyle(color: Colors.blueAccent),),
+      //           //     Slider(
+      //           //       value: radiusFactor,
+      //           //       min: 1.0,
+      //           //       max: 10.0,
+      //           //       label: radiusFactor.toString(),
+      //           //       // divisions: 0,
+      //           //       onChanged: (value) {
+      //           //         setState(() {
+      //           //           // radiusFactor = value;
+      //           //         });
+      //           //       },
+      //           //     ),
+      //           //   ],
+      //           // ),
+      //         ),
+      //
+      //
+      //       ],
+      //     ),
+      //   ),
+      //
+      // ),
     );
 
   }
@@ -155,32 +159,40 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
   /// FUNCTIONS
 
-
-  int particleCount = 50;
   Size size;
-  Offset origin;
-  double radius;
 
   void createBlobField() {
 
-    // get the size of the screen
-    size = MediaQuery.of(context).size;
-
-    // center of the screen
-    origin = Offset(size.width / 2, size.height / 2);
-
-    radius = size.width;
-
-    blobField(origin, radius);
+    blobField();
 
   }
 
-  void blobField(Offset origin, double radius) {
+  double W = 600.0;
+  double Step = 10.0;
+  double radiusParticle = 10;
+  Color colorParticle = Colors.grey;
 
-    while (particles.length < particleCount) {
-      particles.add(newParticle(origin));
+  void blobField() {
+
+    for (var y = 1; y < W / Step; y++) {
+      var x = 0.0;
+      var p = Particle()
+        ..radius = radiusParticle
+        ..color  = colorParticle
+        ..origin = Offset(x, y.toDouble());
+      setParticle(p);
+      particles.add(p);
+      // debugPrint("create particle with offset : ${p.position}");
     }
 
+  }
+
+  void setParticle(Particle p) {
+    var x = p.origin.dx;
+    var y = p.origin.dy * Step;
+    var px = x;
+    var py = y;
+    p.position = Offset(px, py);
   }
 
   Particle newParticle(Offset origin) {
@@ -190,15 +202,15 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
     return Particle()
       ..color = Colors.grey
       ..radius = radius
-      ..position = origin + getRandomPosition(radius)
+      ..position = origin + getRandomPosition(radius);
     // for particle velocity
-      ..theta = rgn.nextDouble() * 2 * pi
-      ..speed = 0.1;
+      // ..theta = rgn.nextDouble() * 2 * pi
+      // ..speed = 0.1;
   }
 
   Offset getRandomPosition(double radius) {
     var t = rgn.nextDouble() * 2 * pi;
-    return PolarToCartesian(radius, t);
+    return polarToCartesian(radius, t);
   }
 
 
@@ -213,22 +225,31 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
   }
 
+  // ignore: non_constant_identifier_names
+  Offset polarToCartesian(double speed, double theta) {
+
+    return Offset(speed * cos(theta), speed * sin(theta));
+
+  }
+
 
   void updateBlobField() {
 
 
-    // move the particles around in its orbit
-    this.particles.forEach((p) {
+    // // move the particles around in its orbit
+    // this.particles.forEach((p) {
+    //
+    //   p.position += polarToCartesian(p.speed, p.theta);
+    //
+    // });
+    //
+    // particles.add(newParticle(origin));
+    //
+    // while(particles.length > particleCount * 1.02) {
+    //   particles.removeAt(0);
+    // }
 
-      p.position += PolarToCartesian(p.speed, p.theta);
 
-    });
-
-    particles.add(newParticle(origin));
-
-    while(particles.length > particleCount * 1.02) {
-      particles.removeAt(0);
-    }
   }
 
 
