@@ -1,3 +1,4 @@
+import 'package:fast_noise/fast_noise.dart';
 ///
 /// Creation date: 23 September 2020 at 12:57
 /// Created by: Frederic Crassat (crassat@orange.fr)
@@ -58,9 +59,11 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
         } else {                            /// update
 
-          // setState(() {
-          //   updateBlobField();
-          // });
+          setState(() {
+
+            updateBlobField();
+
+          });
 
         }
 
@@ -95,7 +98,7 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
 
     size = MediaQuery.of(context).size;
-    debugPrint("debug Size of Screen : $size");
+
 
     return Scaffold(
       body: CustomPaint(
@@ -167,46 +170,62 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
   }
 
-  double W = 600.0;
-  double Step = 10.0;
-  double radiusParticle = 10;
-  Color colorParticle = Colors.grey;
+  double W              = 600.0;
+  double Step           = 10.0;
+  double radiusParticle = 5;
+  Color colorParticle   = Colors.grey;
 
   void blobField() {
 
     for (var y = 1; y < W / Step; y++) {
+
       var x = 0.0;
+
       var p = Particle()
+        ..position = Offset(x, y.toDouble())
         ..radius = radiusParticle
         ..color  = colorParticle
         ..origin = Offset(x, y.toDouble());
-      setParticle(p);
+
       particles.add(p);
-      // debugPrint("create particle with offset : ${p.position}");
+
     }
 
   }
+  
+  var perlin = PerlinNoise();
+  
 
   void setParticle(Particle p) {
+
     var x = p.origin.dx;
     var y = p.origin.dy * Step;
-    var px = x;
-    var py = y;
+
+    var xx = x * 0.2;
+    var yy = y * 0.01;
+    var zz = t * 0.5;
+
+    var n = perlin.singlePerlin3(1942, xx, yy, zz);
+
+    var dx = mapRange(n, 0, 1, -Step.toDouble(), Step.toDouble());
+    var dy = mapRange(n, 0, 1, -Step.toDouble(), Step.toDouble());
+    var px = x + dx;
+    var py = y + dy;
+
     p.position = Offset(px, py);
+
   }
 
-  Particle newParticle(Offset origin) {
 
-    const double radius = 100;
 
-    return Particle()
-      ..color = Colors.grey
-      ..radius = radius
-      ..position = origin + getRandomPosition(radius);
-    // for particle velocity
-      // ..theta = rgn.nextDouble() * 2 * pi
-      // ..speed = 0.1;
+  double mapRange(double value, double min1, double max1, double min2, double max2) {
+
+    double range1 = min1 - max1;
+    double range2 = min2 - max2;
+    return min2 + range2 * value / range1;
   }
+
+
 
   Offset getRandomPosition(double radius) {
     var t = rgn.nextDouble() * 2 * pi;
@@ -232,29 +251,27 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
   }
 
+  var t = 0.0;
+  final stepT = 0.025;
 
   void updateBlobField() {
 
 
-    // // move the particles around in its orbit
-    // this.particles.forEach((p) {
-    //
-    //   p.position += polarToCartesian(p.speed, p.theta);
-    //
-    // });
-    //
-    // particles.add(newParticle(origin));
-    //
-    // while(particles.length > particleCount * 1.02) {
-    //   particles.removeAt(0);
-    // }
+   this.particles.forEach((p) {
 
+
+     setParticle(p);
+
+   });
+
+   t += stepT;
 
   }
 
 
 
 }
+
 
 
 // End of file

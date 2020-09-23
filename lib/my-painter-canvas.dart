@@ -33,22 +33,42 @@ class MyPainterCanvas extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
 
+    var dx1 = canvasSize.width / 2 - W / 2;
+    var dy1 = canvasSize.height / 2 - W / 2;
+
+    var dx2 = canvasSize.width / 2 + W / 2;
+    var dy2 = canvasSize.height / 2 - W / 2;
+
 
     /// 1. Draw the Particles
 
     this.particles.forEach((p) {
 
       var paint = Paint();
-      paint.strokeWidth = 2.0;
+      paint.strokeWidth = 5.0;
       paint.color = p.color;
       paint.style = PaintingStyle.stroke;
-      paint.blendMode = BlendMode.difference;
+      //paint.blendMode = BlendMode.modulate;
+      paint.blendMode = BlendMode.xor;
+
       canvas.drawCircle(p.position + offset, p.radius, paint);
+
+      var pleft = p.origin + Offset(dx1, dy1);
+      canvas.drawLine(pleft, p.position + offset, paint);
+
+      var pright = p.origin + Offset(dx2, dy2);
+      canvas.drawLine(pright, p.position + offset, paint);
 
     });
 
 
     /// 2. Draw the Frame
+    drawFrame(canvas);
+
+
+  }
+
+  void drawFrame(Canvas canvas) {
 
     var center = Offset(canvasSize.width / 2, canvasSize.height / 2);
 
@@ -60,10 +80,7 @@ class MyPainterCanvas extends CustomPainter {
     var rect = Rect.fromCenter(center: center, width: W, height: W);
     canvas.drawRect(rect, border);
 
-
   }
-
-
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
