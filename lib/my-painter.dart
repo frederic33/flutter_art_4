@@ -42,6 +42,8 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
   final int durationInSeconds = 10;
   final double durationEndInMS = 300;
 
+  double factor = 0.0;
+
   @override void initState() {
 
     super.initState();
@@ -101,53 +103,53 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
 
     return Scaffold(
-      body: CustomPaint(
-        painter: MyPainterCanvas(rgn, this.particles, size),
-      ),
-      // // appBar: AppBar(
-      // //   title: Text("Art 3 Circles", style: TextStyle(fontSize: 20, color: Colors.black),),
-      // //   backgroundColor: Colors.deepOrangeAccent,
-      // // ),
-      // body: SafeArea(
-      //
-      //   child: Container(
-      //
-      //     color: Colors.white,
-      //
-      //     child: Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //
-      //         CustomPaint(
-      //
-      //           foregroundPainter: MyPainterCanvas(rgn, particles, MediaQuery.of(context).size),
-      //           // painter: MyPainterCanvas(rgn, particles, animation.value),
-      //           // child: Column(
-      //           //   children: [
-      //           //     SizedBox(height: 8),
-      //           //     Text("radius factor : $radiusFactor", style: TextStyle(color: Colors.blueAccent),),
-      //           //     Slider(
-      //           //       value: radiusFactor,
-      //           //       min: 1.0,
-      //           //       max: 10.0,
-      //           //       label: radiusFactor.toString(),
-      //           //       // divisions: 0,
-      //           //       onChanged: (value) {
-      //           //         setState(() {
-      //           //           // radiusFactor = value;
-      //           //         });
-      //           //       },
-      //           //     ),
-      //           //   ],
-      //           // ),
-      //         ),
-      //
-      //
-      //       ],
-      //     ),
-      //   ),
-      //
+      // body: CustomPaint(
+      //   painter: MyPainterCanvas(rgn, this.particles, size),
       // ),
+      //
+      appBar: AppBar(
+        title: Text("Art 4 Lignes ondulantes", style: TextStyle(fontSize: 20, color: Colors.black),),
+        backgroundColor: Colors.deepOrangeAccent,
+      ),
+      body: SafeArea(
+
+        child: Container(
+
+          color: Colors.white,
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              CustomPaint(
+
+                // foregroundPainter: MyPainterCanvas(rgn, particles, size),
+                painter: MyPainterCanvas(rgn, particles, size),
+                child: Column(
+                  children: [
+                    // SizedBox(height: 8),
+                    // Text("radius factor : $factor", style: TextStyle(color: Colors.blueAccent),),
+                    Slider(
+                      value: factor,
+                      min: 0.0,
+                      max: 0.1,
+                      label: factor.toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          factor = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+
+            ],
+          ),
+        ),
+
+      ),
     );
 
   }
@@ -171,8 +173,8 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
   }
 
   double W              = 600.0;
-  double Step           = 10.0;
-  double radiusParticle = 5;
+  double Step           = 6.0;
+  double radiusParticle = 3;
   Color colorParticle   = Colors.grey;
 
   void blobField() {
@@ -252,7 +254,7 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
   }
 
   var t = 0.0;
-  final stepT = 0.025;
+  final stepT = 0.001;
 
   void updateBlobField() {
 
@@ -264,7 +266,7 @@ class _MyPainterState extends State<MyPainter> with SingleTickerProviderStateMix
 
    });
 
-   t += stepT;
+   t += stepT + factor;
 
   }
 
